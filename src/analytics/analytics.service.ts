@@ -111,14 +111,22 @@ export class AnalyticsService {
     }
     private formatData(data: any): any {
         return data.map(item => ({
-            ...item,
             Cnpj: this.formatCNPJ(item.CNPJ_Representante),
             DataEmissao: this.formatDate(item.datemi),
             DataNFs: item.datnfs ? this.formatDate(item.datnfs) : item.datnfs,
             DataNFv: item.datnfv ? this.formatDate(item.datnfv) : item.datnfv,
-            ValorOri: this.formatNumber(item.vlrori),
+            ValorOrig: this.formatNumber(item.vlrori),
             ValorNFs: item.valornfs ? this.formatNumber(item.valornfs) : item.valornfs,
-            ValorNFv: item.valornfv ? this.formatNumber(item.valornfv) : item.valornfv
+            ValorNFv: item.valornfv ? this.formatNumber(item.valornfv) : item.valornfv,
+            SnFnFv: item.snfnfv ? this.formatNumber(item.snfnfv) : item.snfnfv,
+            Representante: item.representante,
+            NomeCliente: item.nomcli,
+            NomeResponsavel: item.nomrep,
+            NumNFv: item.numnfv ? this.formatNumber(item.numnfv) : item.numnfv,
+            Marca: item.marca,
+            CodCliente: item.codcli,
+            DesMoe: item.desmoe,
+            DesCpg: item.descpg,
         }));
     }
 
