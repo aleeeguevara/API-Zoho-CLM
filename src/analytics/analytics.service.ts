@@ -4,6 +4,7 @@ https://docs.nestjs.com/providers#services
 
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import axios from 'axios';
+import moment from 'moment';
 
 @Injectable()
 export class AnalyticsService {
@@ -61,9 +62,9 @@ export class AnalyticsService {
             url:downloadUrl,
             method: 'GET'
         }, accessToken)
-        console.log('eport job data :',response)
+        console.log('export job data final:',response)
         
-        return response
+        return this.formatData(response.data)
     }
 
     async waitForJobCompleted(workspaceId, jobId, accessToken): Promise<any> {
@@ -97,7 +98,28 @@ export class AnalyticsService {
 
 
     }
+    private formatCNPJ(cnpj: string): string {
+        return cnpj.replace(/,/g, '').replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5");
+    }
+    
+    private formatDate(date: string): string {
+        return moment(date, 'DD MMM, YYYY HH:mm:ss').format('DD/MM/YYYY');
+    }
 
-
+    private formatNumber(number: string): string {
+        return number.replace(/\./g, '').replace(/,/g, '.');
+    }
+    private formatData(data: any): any {
+        return data.map(item => ({
+            ...item,
+            Cnpj: this.formatCNPJ(item.CNPJ_Representante),
+            DataEmissao: this.formatDate(item.datemi),
+            DataNFs: item.datnfs ? this.formatDate(item.datnfs) : item.datnfs,
+            DataNFv: item.datnfv ? this.formatDate(item.datnfv) : item.datnfv,
+            ValorOri: this.formatNumber(item.vlrori),
+            ValorNFs: item.valornfs ? this.formatNumber(item.valornfs) : item.valornfs,
+            ValorNFv: item.valornfv ? this.formatNumber(item.valornfv) : item.valornfv
+        }));
+    }
 
 }
