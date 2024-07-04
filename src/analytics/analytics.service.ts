@@ -4,7 +4,7 @@ https://docs.nestjs.com/providers#services
 
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import axios from 'axios';
-import moment from 'moment';
+import * as moment from 'moment';
 
 @Injectable()
 export class AnalyticsService {
