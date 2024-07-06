@@ -39,3 +39,30 @@ export interface ApiZohoAnalyticsData {
     titulovctnfv: string;
     diasnfv: string;
 }
+
+export interface ApiExecuteJobData {
+    Cnpj?: string;
+    DataEmissao?: string;
+    DataNFs?: string;
+    DataNFv?: string;
+    ValorOri?: string;
+    ValorNFs?: string;
+    ValorNFv?: string;
+    Label?: string;
+  }
+  export interface ApiData {
+    [key: string]: string;
+  }
+  type DataInfo = {
+    jobId?: string,
+    jobCode?: string,
+    jobStatus?: string,
+    downloadUrl?: string,
+    expiryTime?: string
+  }
+
+  export interface CheckingData  {
+    status?: string,
+    summary?: string,
+    data?: DataInfo & ApiZohoAnalyticsData[]
+}

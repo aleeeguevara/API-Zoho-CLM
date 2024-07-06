@@ -6,7 +6,8 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import * as moment from 'moment';
-import { ApiZohoAnalyticsData } from './types';
+import { ApiExecuteJobData, ApiZohoAnalyticsData, CheckingData } from './types';
+
 
 @Injectable()
 export class AnalyticsService {
@@ -34,7 +35,7 @@ export class AnalyticsService {
             throw new HttpException('Failed to get access token', HttpStatus.UNAUTHORIZED);
         }
     }
-    private async authenticateRequest(config, accessToken): Promise<any> {
+    private async authenticateRequest(config, accessToken): Promise<CheckingData> {
         config.headers= {
             ...config.headers,
             Authorization: `Zoho-oauthtoken ${accessToken}`,
@@ -60,7 +61,7 @@ export class AnalyticsService {
         console.log('job ID ',response.data.jobId)
         return response.data.jobId
     }
-    async getDownloadJobUrl(jobId, accessToken):Promise<any>{
+    async getDownloadJobUrl(jobId, accessToken):Promise<CheckingData>{
         const url = `https://analyticsapi.zoho.com/restapi/v2/bulk/workspaces/${this.workspaceId    }/exportjobs/${jobId}`;
         return await this.authenticateRequest({
             url,
@@ -68,14 +69,14 @@ export class AnalyticsService {
         }, accessToken)
     }
 
-    async exportJobData(downloadUrl, accessToken):Promise<any>{
+    async exportJobData(downloadUrl, accessToken):Promise<ApiExecuteJobData[]>{
         const response = await this.authenticateRequest({
             url:downloadUrl,
             method: 'GET'
         }, accessToken)
-        console.log('export job data final:',response)
+        console.log('export job data final DADOS:',response)
         
-        return response.data
+        return this.formatData(response.data)
     }
 
     async waitForJobCompleted(jobId: string, accessToken: string): Promise<string> {
@@ -99,7 +100,7 @@ export class AnalyticsService {
         return downloadUrl;
     }
 
-    async executeJob(config): Promise<any>{
+    async executeJob(config): Promise<ApiExecuteJobData[]>{
         const accessToken = await this.refreshAccessToken();
         const jobId = await this.createExportJob(config, accessToken);
         const downloadUrl = await this.waitForJobCompleted(jobId, accessToken);
@@ -117,7 +118,7 @@ export class AnalyticsService {
     private formatNumber(number: string): string {
         return number.replace(/\./g, '').replace(/,/g, '.');
     }
-    private formatData(data: any): any {
+    private formatData(data: ApiZohoAnalyticsData[]): ApiExecuteJobData[] {
         return data.map(item => ({
             Cnpj: this.formatCNPJ(item.CNPJ_Representante),
             DataEmissao: this.formatDate(item.datemi),
@@ -137,9 +138,10 @@ export class AnalyticsService {
             DesCpg: item.descpg,
         }));
     }
-    async executeJobWithCriteria(field: string, fieldValue: string): Promise<ApiZohoAnalyticsData> {
+    async executeJobWithCriteria(field: string, fieldValue: string): Promise<ApiExecuteJobData[]> {
         const criteria = `\"${field}\"=${fieldValue}`;
         const config = JSON.stringify({ responseFormat: 'json', criteria });
+        console.log(config)
         const accessToken = await this.refreshAccessToken();
         const jobId = await this.createExportJob(config, accessToken);
         const downloadUrl = await this.waitForJobCompleted(jobId, accessToken);

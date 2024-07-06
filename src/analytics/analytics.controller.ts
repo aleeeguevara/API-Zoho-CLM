@@ -4,6 +4,7 @@ https://docs.nestjs.com/controllers#controllers
 
 import { Body, Controller, Get, HttpException, HttpStatus, Post, Query } from '@nestjs/common';
 import { AnalyticsService } from './analytics.service';
+import { ApiExecuteJobData } from './types';
 
 
 @Controller('analytics')
@@ -13,7 +14,7 @@ export class AnalyticsController {
     @Post('execute-job')
     async executeJob(
         @Body('config')config:string
-    ): Promise<string> {
+    ): Promise<ApiExecuteJobData[]> {
         try{
             return await this.analyticsService.executeJob(config)
         }catch(err){
@@ -25,7 +26,7 @@ export class AnalyticsController {
     async executeJobWithCriteria(
       @Query('field') field: string,
       @Query('fieldValue') fieldValue: string,
-    ): Promise<any> {
+    ): Promise<ApiExecuteJobData[]> {
       try {
         return await this.analyticsService.executeJobWithCriteria(field, fieldValue);
       } catch (err) {
