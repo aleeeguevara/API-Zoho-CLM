@@ -28,7 +28,6 @@ export class AnalyticsService {
         const url = `https://accounts.zoho.com/oauth/v2/token?refresh_token=${this.refreshToken}&client_id=${this.clientId}&client_secret=${this.clientSecret}&grant_type=refresh_token`
         try{
             const response = await axios.post(url)
-            console.log('access token: ',response.data.access_token)
             return response.data.access_token;
         }catch(error){
             console.error(error.message);
@@ -44,7 +43,6 @@ export class AnalyticsService {
 
         try{
             const response = await axios(config)
-            console.log('authentication ',response.data)
             return response.data
         }catch(error){
             console.error(error.message);
@@ -58,7 +56,6 @@ export class AnalyticsService {
             url,
             method: 'GET'
         }, accessToken)
-        console.log('job ID ',response.data.jobId)
         return response.data.jobId
     }
     async getDownloadJobUrl(jobId, accessToken):Promise<CheckingData>{
@@ -74,7 +71,6 @@ export class AnalyticsService {
             url:downloadUrl,
             method: 'GET'
         }, accessToken)
-        console.log('export job data final DADOS:',response)
         
         return this.formatData(response.data)
     }
@@ -83,9 +79,7 @@ export class AnalyticsService {
         let jobStatus;
         let downloadUrl;
         do {
-            const response = await this.getDownloadJobUrl(jobId, accessToken);
-            console.log('no wait for completed :', response)
-            
+            const response = await this.getDownloadJobUrl(jobId, accessToken);            
             jobStatus = response.data.jobStatus;
 
             if (jobStatus === 'JOB COMPLETED') {
@@ -104,7 +98,6 @@ export class AnalyticsService {
         const accessToken = await this.refreshAccessToken();
         const jobId = await this.createExportJob(config, accessToken);
         const downloadUrl = await this.waitForJobCompleted(jobId, accessToken);
-        console.log('download URL :',downloadUrl)
         return await this.exportJobData(downloadUrl, accessToken);
     }
     private formatCNPJ(cnpj: string): string {
@@ -141,7 +134,6 @@ export class AnalyticsService {
     async executeJobWithCriteria(field: string, fieldValue: string): Promise<ApiExecuteJobData[]> {
         const criteria = `\"${field}\"=${fieldValue}`;
         const config = JSON.stringify({ responseFormat: 'json', criteria });
-        console.log(config)
         const accessToken = await this.refreshAccessToken();
         const jobId = await this.createExportJob(config, accessToken);
         const downloadUrl = await this.waitForJobCompleted(jobId, accessToken);
