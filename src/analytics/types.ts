@@ -41,14 +41,23 @@ export interface ApiZohoAnalyticsData {
 }
 
 export interface ApiExecuteJobData {
-    Cnpj?: string;
-    DataEmissao?: string;
-    DataNFs?: string;
-    DataNFv?: string;
-    ValorOri?: string;
-    ValorNFs?: string;
-    ValorNFv?: string;
-    Label?: string;
+    Cnpj: string;
+    DataEmissao: string;
+    DataNFs: string;
+    DataNFv: string;
+    ValorOrig: number;
+    ValorNFs: number;
+    ValorNFv: number;
+    SnFnFv: string;
+    Representante: string,
+    NomeCliente: string,
+    NomeResponsavel: string,
+    NumNFv: number,
+    NumPedido: number,
+    Marca: string,
+    CodCliente: string,
+    DesMoe: string,
+    DesCpg: string
   }
   export interface ApiData {
     [key: string]: string;
