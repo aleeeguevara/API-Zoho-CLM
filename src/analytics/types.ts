@@ -45,15 +45,15 @@ export interface ApiExecuteJobData {
     DataEmissao: string;
     DataNFs: string;
     DataNFv: string;
-    ValorOrig: number;
-    ValorNFs: number;
-    ValorNFv: number;
+    ValorOrig: string | number;
+    ValorNFs: string | number;
+    ValorNFv: string | number;
     SnFnFv: string;
     Representante: string,
     NomeCliente: string,
     NomeResponsavel: string,
-    NumNFv: number,
-    NumPedido: number,
+    NumNFv: string | number,
+    NumPedido: string | number,
     Marca: string,
     CodCliente: string,
     DesMoe: string,
