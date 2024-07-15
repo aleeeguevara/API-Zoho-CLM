@@ -5,8 +5,8 @@ https://docs.nestjs.com/providers#services
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
-import * as moment from 'moment';
 import { ApiExecuteJobData, ApiZohoAnalyticsData, CheckingData } from './types';
+import { formatData } from '../helpers/formatting.helper';
 
 
 @Injectable()
@@ -72,7 +72,7 @@ export class AnalyticsService {
             method: 'GET'
         }, accessToken)
         
-        return this.formatData(response.data)
+        return formatData(response.data)
     }
 
     async waitForJobCompleted(jobId: string, accessToken: string): Promise<string> {
@@ -100,35 +100,7 @@ export class AnalyticsService {
         const downloadUrl = await this.waitForJobCompleted(jobId, accessToken);
         return await this.exportJobData(downloadUrl, accessToken);
     }
-    private formatCNPJ(cnpj: string): string {
-        return cnpj.replace(/,/g, '').replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5");
-    }
-    
-    private formatDate(date: string): string {
-        return moment(date, 'DD MMM, YYYY HH:mm:ss').format('DD/MM/YYYY');
-    }
 
-    private formatData(data: ApiZohoAnalyticsData[]): ApiExecuteJobData[] {
-        return data.map(item => ({...item,
-            Cnpj: this.formatCNPJ(item.CNPJ_Representante),
-            DataEmissao: item.datemi ? this.formatDate(item.datemi) : item.datemi,
-            DataNFs: item.datnfs ?this.formatDate(item.datnfs) : item.datnfs,
-            DataNFv: item.datnfv ? this.formatDate(item.datnfv) : item.datnfv,
-            ValorOrig:item.vlrori,
-            ValorNFs: item.valornfs,
-            ValorNFv:item.valornfv,
-            SnFnFv: item.snfnfv,
-            Representante: item.representante,
-            NomeCliente: item.nomcli,
-            NomeResponsavel: item.nomrep,
-            NumNFv:item.numnfv,
-            NumPedido: item.numped,
-            Marca: item.marca,
-            CodCliente: item.codcli,
-            DesMoe: item.desmoe,
-            DesCpg: item.descpg,
-        }));
-    }
     async executeJobWithCriteria(field: string, fieldValue: string): Promise<ApiExecuteJobData[]> {
         const criteria = `\"${field}\"=${fieldValue}`;
         const config = JSON.stringify({ responseFormat: 'json', criteria });
