@@ -9,5 +9,17 @@ export const formatCNPJ = (cnpj: string): string => {
 export const formatDate = (date: string): string => {
     return moment(date, 'DD MMM, YYYY HH:mm:ss').format('DD/MM/YYYY');
 }
-export const formatData = (data: ApiZohoAnalyticsData[]): ApiExecuteJobData[] => 
-    data.map(el => _.mapKeys(el, (val, key) => _.camelCase(key)));
+
+export const formatData = (data: ApiZohoAnalyticsData[]): ApiExecuteJobData[] => {
+    return data.map(el => {
+        const formattedEl = _.mapKeys(el, (val, key) => _.camelCase(key));
+        
+        Object.keys(formattedEl).forEach(key => {
+            if (key.toLowerCase().includes('dat')) {
+                formattedEl[key] = formattedEl[key] ?? formatDate(formattedEl[key]);
+            }
+        });
+
+        return formattedEl;
+    });
+}   
